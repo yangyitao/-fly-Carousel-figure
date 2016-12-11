@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>多动画轮播图</title>
+		
+		<style type="text/css">
+			
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			ul li {
+				list-style: none;
+			}
+			
+			#main {
+				width: 760px;
+				height: 300px;
+				position: relative;
+				margin: 50px auto;
+			}
+			
+			#main .pic {
+				width: 760px;
+				height: 300px;
+				
+				overflow: hidden;
+			}
+			#main .pic ul li {
+				width: 760px;
+				height: 300px;
+				position: relative;
+				
+			}
+			#main .pic ul li .img1 {
+				position: absolute;
+				top: 0;
+				left: -760px;
+			}
+			#main .pic ul li .img2 {
+				position: absolute;
+				top: 0;
+				left: -20px;
+				display: none;
+			}
+			#main .nav {
+				position: absolute;
+				right: 20px;
+				bottom: 20px;
+			}
+			#main .nav ul li {
+				width: 20px;
+				height: 20px;
+				border: 1px solid #fff;
+				float: left;
+				margin-left: 5px;
+				text-align: center;
+				line-height: 20px;
+				cursor:pointer;
+			}
+			#main .nav ul li.select{
+				background: yellow;
+			}
+		</style>
+		<script src="jquery-1.12.0.js"></script>
+		<script>
+		$(function(){
+			//获取li节点
+			var $aLi = $('.pic').find('li');
+			var index = 0;//存储图片下标 
+			var $nLi = $('.nav').find('li');
+			//设置初始动画
+			$aLi.eq(0).find('.img1').animate({'left':0},function(){
+				$(this).next().show();
+				$(this).next().animate({'left':0},1000);
+				$nLi.eq(0).addClass('select');
+			});
+
+
+			//设置定时器，让图片每隔3000轮播
+			var timer = setInterval(changepic,3000);
+			//图片切换函数
+			function changepic(){
+				index++;
+				// console.log(index)
+				//判断是否是最后一张
+				if(index == $aLi.length){
+					index = 0;
+				}
+
+				//设置li切换动画
+				$aLi.eq(index).show().siblings().hide();
+				//切换按钮显示状态
+				$nLi.eq(index).addClass('select').siblings().removeClass('select');
+				//设置Li里面图片的动画
+				$aLi.eq(index).find('.img1').animate({'left':0},1000,function(){
+					$(this).next().show();
+					$(this).next().animate({'left':0},1000);
+				});
+				//其他li里的图片恢复初始状态
+				$aLi.eq(index).siblings().find('.img1').css({'left':-760});
+				$aLi.eq(index).siblings().find('.img2').css({'left':-20,'display':'none'});
+
+			}
+			//切换按钮的点击事件
+			$.each($nLi,function(idx){
+				var idx = $nLi.eq(idx).index();
+				$nLi.eq(idx).on('click',function(){
+					 index = $(this).index()-1;//图片的下标等于切换按钮的下标
+					 navMove();
+				});
+			});
+
+			function navMove(){
+				changepic();
+				clearInterval(timer);
+				timer = setInterval(changepic,3000);
+			}
+
+			//上一页与下一页的点击事件
+			var $prevBtn = $('.btnPrev');
+			var $nextBtn = $('.btnNext');
+			//点击上一页
+			$prevBtn.on('click',function(){
+			// 如果是第一页的话，我们需要先立即跳到第4张图片的位置
+				if(index == 0){
+					$aLi.eq($aLi.length-2).show().siblings().hide();
+					index = $aLi.length - 2;					
+				}else{
+					index = index - 2;
+				}					
+				navMove();
+			});
+			//点击下一页
+			$nextBtn.on('click',function(){
+				if(index == $aLi.length){
+					index = 0;
+				}
+				navMove();
+
+			})
+		})
+
+		</script>
+	</head>
+	<body>
+		<div id="main">
+			<div class="pic">
+				<ul>
+					<li>
+						<img class="img0" src="img/bg1.jpg"/>
+						<img class="img1" src="img/text1.png"/>
+						<img class="img2" src="img/con1.png"/>
+					</li>
+					<li>
+						<img class="img0" src="img/bg2.jpg"/>
+						<img class="img1" src="img/text2.png"/>
+						<img class="img2" src="img/con2.png"/>
+					</li>
+					<li>
+						<img class="img0" src="img/bg3.jpg"/>
+						<img class="img1" src="img/text3.png"/>
+						<img class="img2" src="img/con3.png"/>
+					</li>
+					<li>
+						<img class="img0" src="img/bg4.jpg"/>
+						<img class="img1" src="img/text4.png"/>
+						<img class="img2" src="img/con4.png"/>
+					</li>
+					<li>
+						<img class="img0" src="img/bg5.jpg"/>
+						<img class="img1" src="img/text5.png"/>
+						<img class="img2" src="img/con5.png"/>
+					</li>
+
+				</ul>
+			</div>
+			<div class="nav">
+				<ul>
+					<li>1</li>
+					<li>2</li>
+					<li>3</li>
+					<li>4</li>
+					<li>5</li>
+				</ul>
+			</div>
+			
+			<a href="#" class="btnPrev">上一页</a>
+			<a href="#" class="btnNext">下一页</a>
+			
+		</div>
+
+	</body>
+</html>
